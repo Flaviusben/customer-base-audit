@@ -6,15 +6,29 @@
 
 ## The problem (why you should pay attention)
 
-Every AI analytics tool on the market today — text-to-SQL copilots, "ask your data" chatbots, auto-dashboard generators — will happily answer *"What's our churn? What are our customers worth?"* with a confident number.
+Every AI analytics tool on the market today: text-to-SQL copilots, "ask your data" chatbots, auto-dashboard generators, will happily answer *"What's our churn? What are our customers worth?"* with a confident number.
 
 None of them check whether the number is statistically legitimate.
 
-An LLM will fit BG/NBD (a model for businesses where churn is *unobserved*) to subscription billing data where churn is *directly observed* — and report plausible-looking, wrong customer lifetime values. It will compute CLV on a transaction log where the same customer appears under three email spellings, where guest checkouts hide 15% of orders, where refunds inflate frequency. The output looks like analysis. It's noise with a confidence interval.
-
-This is not a hypothetical. Running this engine on **CDNOW** — the canonical academic benchmark dataset used in every CLV course — it flagged a violation of the Gamma-Gamma independence assumption (frequency–spend correlation, Spearman +0.21) that biases the standard textbook pipeline. The dataset everyone learns on fails the assumptions everyone skips.
+An LLM will fit BG/NBD (a model for businesses where churn is *unobserved*) to subscription billing data where churn is *directly observed* then they report plausible-looking, wrong customer lifetime values. It will compute CLV on a transaction log where the same customer appears under three email spellings, where guest checkouts hide 15% of orders, where refunds inflate frequency. The output looks like analysis. It's noise with a confidence interval.
 
 **The thesis: as analysis gets automated, the scarce layer is not running models — it's validating them. This repo encodes that validation as code.**
+
+## Case Study: The CDNOW Benchmark Fails the Gamma-Gamma Test
+
+If you ask an AI data analyst (I'm referring here to AI chat bots) to calculate Customer Lifetime Value, it will almost certainly default to the standard BTYD pipeline (BG/NBD + Gamma-Gamma). It will execute the math flawlessly, output a CSV, and tell you exactly what your customers are worth.
+
+**It will also be confidently wrong.**
+
+To prove why automated analytics requires explicit methodology gates, this engine runs the canonical CDNOW dataset, which is the exact retail benchmark used in almost every global CLV curriculum.
+
+*The standard pipeline assumes that a customer's purchase frequency and their monetary value per order are completely independent. Our engine's diagnostic gate caught a severe violation of this assumption:*
+
+- The Anomaly: Frequency and monetary value in the CDNOW dataset exhibit a positive dependence (Spearman rho = +0.21, p < 0.001).
+- The Business Impact: Frequent buyers actually spend more per order. Because the standard Gamma-Gamma model ignores this, it aggressively pulls the expected spend of heavy buyers down toward the population mean.
+- The Result: The textbook algorithm systematically undervalues your most loyal, high-frequency champions. When this engine reports that 71% of future value is held by the top 20% of CDNOW customers, the methodology gate flags that this is a conservative floor, not a ceiling.
+
+*The bottleneck in modern BI is no longer writing the code to fit the model. The bottleneck is knowing when the model is lying. This engine is built to refuse or flag invalid math before it reaches a boardroom.*
 
 ## What it does
 
