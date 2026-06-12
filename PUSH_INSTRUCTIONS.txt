@@ -1,0 +1,13 @@
+1. Create a NEW empty repo on github.com named: customer-base-audit
+   (no README, no license — we have them)
+2. Unzip this archive, add your v0.1 files:
+   - audit_engine.py            (the v0.1 BG/NBD + Gamma-Gamma engine)
+   - examples/executive_brief.html
+3. From inside the folder:
+   git init && git add . && git commit -m "v0.2: ingestion gate, data-quality diagnostics, contractual auto-detection"
+   git branch -M main
+   git remote add origin https://github.com/Flaviusben/customer-base-audit.git
+   git push -u origin main
+   (git will prompt for your username + personal access token)
+4. Optional: in Flaviusben/Flaviusben README, add one line:
+   "Building [customer-base-audit](https://github.com/Flaviusben/customer-base-audit) — CLV analytics that validates its own assumptions."
