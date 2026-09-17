@@ -125,6 +125,19 @@ def diagnose(df: pd.DataFrame, cols: dict, rep: AuditReport) -> pd.DataFrame:
         rep.add("FLAG","DUPLICATES", f"{dup:.1%} exact duplicate rows -> frequency inflated, P(alive) biased up. Deduplicating.")
         df = df.drop_duplicates(dupe_key)
 
+    # --- granularity: order LINES vs orders (the most common e-commerce export shape)
+    if "order_id" in df.columns:
+        lines_per_order = df.groupby("order_id").size()
+        share_multi = (lines_per_order > 1).mean()
+        if share_multi > 0.05:
+            rep.add("FLAG","ORDER_LINES",
+                    f"{share_multi:.0%} of orders span multiple rows (one row per product line). "
+                    f"Counting rows as purchases would inflate frequency {len(df)/df['order_id'].nunique():.2f}x "
+                    f"and bias P(alive) upward. Aggregating to order level.")
+            agg = {"amount":"sum"} if "amount" in df.columns else {}
+            first_cols = [c for c in df.columns if c not in ("order_id","amount")]
+            df = (df.groupby("order_id", as_index=False)
+                    .agg({**{c:"first" for c in first_cols}, **agg}))
     # --- observation window
     span_days = (df["date"].max() - df["date"].min()).days
     rep.stats.update(rows_clean=len(df), customers=df["customer_id"].nunique(),

@@ -2,7 +2,7 @@
 
 **A methodology gate for customer analytics: it checks whether a CLV model is valid for your data before it lets anyone compute one.**
 
-Independent project, built from customer-analytics coursework and AI-engineering practice.
+Independent project, built from customer-analytics coursework and AI-engineering practice. Not affiliated with any employer or vendor.
 
 ---
 

@@ -6,3 +6,5 @@ matplotlib>=3.7      # executive brief charts
 fastapi>=0.110       # v0.3 agent tool server
 uvicorn>=0.29
 python-multipart>=0.0.9
+requests>=2.31         # demo_agent.py calling the tool server
+google-genai>=1.0      # demo_agent.py — free tool-calling LLM for level 3 (Gemini)
